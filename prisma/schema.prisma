@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Project {
+  id          String   @id
+  name        String
+  url         String
+  audience    String
+  isFavorite  Boolean  @default(false)
+  status      String
+  priority    String
+  startDate   DateTime
+  endDate     DateTime
+  logoUrl     String?
+  tasks       Task[]
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  text        String
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  priority    String?
+  status      String?
+  description String?
+  dueDate     DateTime?
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  subtasks    Subtask[]
+  tags        Tag[]
+}
+
+model Subtask {
+  id        String   @id @default(cuid())
+  text      String
+  completed Boolean  @default(false)
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  text  String @unique
+  tasks Task[]
+}
